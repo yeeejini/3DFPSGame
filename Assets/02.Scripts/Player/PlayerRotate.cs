@@ -19,8 +19,13 @@ public class PlayerRotate : MonoBehaviour
     {
         // 1. 마우스 입력(drag) 받는다.
         float mouseX = Input.GetAxis("Mouse X");
+
+
         // 2. 마우스 입력 값만큼 x값을 누적한다.
-        _mx += mouseX;
+        _mx += mouseX * RotationSpeed * Time.deltaTime;
+        //_mx = Mathf.Clamp(value: _mx, min: -270f, max: 270f);
+
+
         // 3. 누적한 값에 따라 회전한다.
         transform.eulerAngles = new Vector3(x: 0f, y: _mx, z: 0);
     }

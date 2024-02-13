@@ -57,8 +57,8 @@ public class FPSCamera : MonoBehaviour
 
 
         // 2. 마우스 입력 값을 이용해 회전 방향을 구한다.
-        Vector3 rotationDir = new Vector3(mouseX, mouseY, z: 0);
-        rotationDir.Normalize(); // 정규화
+        Vector3 rotationDir = new Vector3(mouseX, mouseY, 0);
+        // rotationDir.Normalize(); // 정규화
 
         // 3. 회전 방향으로 회전한다.
         // 새로운 위치 = 이전 위치 + 방향 * 속도 * 시간
@@ -66,8 +66,8 @@ public class FPSCamera : MonoBehaviour
         // transform.eulerAngles += rotationDir * RotationSpeed * Time.deltaTime;
 
         // 3-1. 회전 방향에 따라 마우스 입력 값 만큼 미리 누적시킨다.
-        _mx = _mx + rotationDir.x * RotationSpeed * Time.deltaTime;
-        _my = _my + rotationDir.y * RotationSpeed * Time.deltaTime;
+        _mx += rotationDir.x * RotationSpeed * Time.deltaTime;
+        _my += rotationDir.y * RotationSpeed * Time.deltaTime;
 
 
         // 4. 시선의 상하 제한을 -90 ~ 90도 사이로 제한하고 싶다.
@@ -84,9 +84,10 @@ public class FPSCamera : MonoBehaviour
         }*/
         //transform.eulerAngles = rotation;
 
-        _my = Mathf.Clamp(value: _my, min: -90f, max: 90f);
+        _my = Mathf.Clamp(_my, -90f, 90f);
+        //_mx = Mathf.Clamp(value: _mx, min: -270f, max: 270f);
 
-        transform.eulerAngles = new Vector3(x: -_my, y: _mx, z: 0);
+        transform.eulerAngles = new Vector3(-_my, _mx, 0);
 
         // 오일러 각도의 단점
         // 1. 짐벌락 현상
