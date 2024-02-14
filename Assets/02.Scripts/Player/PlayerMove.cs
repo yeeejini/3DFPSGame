@@ -23,12 +23,24 @@ public class PlayerMove : MonoBehaviour
     [Header("스태미나 슬라이더 UI")]
     public Slider StaminaSliderUI;
 
+    private CameraManager cameraManager;
+
     private void Start()
     {
         Stamina = MaxStamina;
+        cameraManager = GetComponent<CameraManager>();
     }
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            CameraManager.Instance.SetCameraMode(CameraMode.FPS);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            CameraManager.Instance.SetCameraMode(CameraMode.TPS);
+        }
+
         // 1. 키 입력 받기
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -64,5 +76,7 @@ public class PlayerMove : MonoBehaviour
 
         // 3. 이동하기                                  
         transform.position += speed * dir * Time.deltaTime;
+
+        
     }
 }
