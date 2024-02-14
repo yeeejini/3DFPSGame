@@ -37,6 +37,7 @@ public class PlayerMove : MonoBehaviour
     public float JumpPower = 10f;
     public int JumpMaxCount = 2;
     public int JumpRemainCount;
+    private bool _isJumping = false;
     // 구현 순서 :
     // 1. 만약에 [Spacebar] 버튼을 누르면..
     // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
@@ -124,11 +125,16 @@ public class PlayerMove : MonoBehaviour
 
         if (_characterController.isGrounded)
         {
+            _isJumping = false;
+            _yVelocity = 0f;
+
             JumpRemainCount = JumpMaxCount;
         }
         
-        if (Input.GetKeyDown(KeyCode.Space) && (_characterController.isGrounded || JumpRemainCount > 0))
+        if (Input.GetKeyDown(KeyCode.Space) && (_characterController.isGrounded || (_isJumping && JumpRemainCount > 0)))
         {
+            _isJumping = true;
+
             JumpRemainCount--;
             // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
             _yVelocity = JumpPower;
@@ -141,6 +147,10 @@ public class PlayerMove : MonoBehaviour
 
         // 3-1. 중력 적용
         // 1. 중력 가속도가 누적된다.
+        /*if(_isJumping) 
+        {
+            _yVelocity += _gravity * Time.deltaTime;
+        }*/
         _yVelocity += _gravity * Time.deltaTime;
         // 2. 플레이어에게 y축에 있어 중력을 적용한다.
         dir.y = _yVelocity;
