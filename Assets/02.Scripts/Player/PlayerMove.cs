@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
+    private CameraManager cameraManager;
     // 목표 : 키보드 방향키 또는 WASD 를 누르면 캐릭터를 바라보는 방향 기준으로 이동시키고 싶다.
     // 속성 :
     // - 이동 속도
@@ -23,7 +24,42 @@ public class PlayerMove : MonoBehaviour
     [Header("스태미나 슬라이더 UI")]
     public Slider StaminaSliderUI;
 
-    private CameraManager cameraManager;
+    private CharacterController _characterController;
+
+
+
+
+
+
+    // 목표 : 스페이스바를 누르면 캐릭터를 점프하고 싶다.
+    // 필요 속성 :
+    // - 점프 파워 값
+    public float JumpPower = 10f;
+    // 구현 순서 :
+    // 1. 만약에 [Spacebar] 버튼을 누르면..
+    // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
+
+
+
+
+
+
+    // 목표 : 캐릭터에게 중력을 적용하고 싶다.
+    // 필요 속성 :
+    // - 중력 값
+    public float _gravity = -20; // 중력 변수
+    // - 누적할 중력 변수 : y축 속도
+    private float _yVelocity = 0f;
+    // 구현 순서 :
+    // 1. 중력 가속도가 누적된다.
+    // 2. 플레이어에게 y축에 있어 중력을 적용한다.
+
+
+    private void Awake()
+    {
+        _characterController = GetComponent<CharacterController>();
+    }
+
 
     private void Start()
     {
@@ -74,9 +110,31 @@ public class PlayerMove : MonoBehaviour
         StaminaSliderUI.value = Stamina / MaxStamina; // 0 ~ 1 사이 반환
 
 
-        // 3. 이동하기                                  
-        transform.position += speed * dir * Time.deltaTime;
 
+
+        // 점프 구현
+        // 1. 만약에 [Spacebar] 버튼을 누르는 순간 && 땅이면..
+        if(Input.GetKeyDown(KeyCode.Space) && _characterController.isGrounded) 
+        {
+            // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
+            _yVelocity = JumpPower;
+        }
+
+
+
+
+        // 3-1. 중력 적용
+        // 1. 중력 가속도가 누적된다.
+        _yVelocity += _gravity * Time.deltaTime;
+        // 2. 플레이어에게 y축에 있어 중력을 적용한다.
+        dir.y = _yVelocity;
+
+
+
+
+        // 3-2. 이동하기                                  
+        // transform.position += speed * dir * Time.deltaTime; -> 캐릭터 컨트롤러를 사용
+        _characterController.Move(dir * speed * Time.deltaTime);
         
     }
 }
