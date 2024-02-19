@@ -147,3 +147,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BombEffectPrefabs: {fileID: 5594538680689390326, guid: 2a720355587482040a1929a9f22280d2, type: 3}
+  ExplosionRadius: 10
+  Damage: 60
