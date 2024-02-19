@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerGunFire : MonoBehaviour
 {
+    public int Damage = 1;
     // 목표 : 마우스 왼쪽 버튼을 누르면 시선이 바라보는 방향으로 총을 발사하고 싶다.
     // 필요 속성
     // - 총알 튀는 이펙트 프리팹
@@ -38,6 +39,7 @@ public class PlayerGunFire : MonoBehaviour
         // 총알 개수 초기화
         BulletRemainCount = BulletMaxCount;
         RefreshUI();
+        
     }
     private void RefreshUI() 
     {
@@ -91,6 +93,20 @@ public class PlayerGunFire : MonoBehaviour
             
             if(IsHit) 
             {
+                // 실습 과제 18. 레이저를 몬스터에게 맞출 시 몬스터 체력 닳는 기능 구현
+                // 레이저랑 몬스터를 부딪히게..
+                /*if (hitInfo.collider.CompareTag("Monster")) 
+                {
+                    Monster monster = hitInfo.collider.GetComponent<Monster>();
+                    monster.Hit(Damage);
+                }*/
+                IHitable hitObject = hitInfo.collider.GetComponent<IHitable>();
+                if (hitObject != null)   // 때릴 수 있는 친구인가요?
+                {
+                    hitObject.Hit(Damage);
+                }
+
+
                 // 5. 부딪힌 위치에 (총알이 튀는)이펙트를 위치한다.
                 HitEffect.gameObject.transform.position = hitInfo.point;
                 // 6. 이펙트가 쳐다보는 방향을 부딪힌 위치의 법선 벡터로 한다.

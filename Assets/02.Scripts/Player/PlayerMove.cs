@@ -72,7 +72,13 @@ public class PlayerMove : MonoBehaviour
     // 1. 만약 벽에 닿아 있는데
     // 2. [Spacebar] 버튼을 누르고 있으면
     // 3. 벽을 타겠다.
-    
+
+    [Header("체력 슬라이더 UI")]
+    public Slider HealthSliderUI;
+
+    public int Health;
+    public int MaxHealth = 100;
+
 
     private void Awake()
     {
@@ -84,6 +90,8 @@ public class PlayerMove : MonoBehaviour
     {
         Stamina = MaxStamina;
         cameraManager = GetComponent<CameraManager>();
+
+        Health = MaxHealth;
     }
     void Update()
     {
@@ -159,9 +167,10 @@ public class PlayerMove : MonoBehaviour
         }
 
         Stamina = Mathf.Clamp(value:Stamina, min:0, max:100);
+        Health = Mathf.Clamp(Health, min:0, max:100);
 
         StaminaSliderUI.value = Stamina / MaxStamina; // 0 ~ 1 사이 반환
-
+        HealthSliderUI.value = (float)Health / (float)MaxHealth;
 
 
 
@@ -172,7 +181,7 @@ public class PlayerMove : MonoBehaviour
             // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
             _yVelocity = JumpPower;
         }*/
-
+        
         // 땅에 닿았을때
         if (_characterController.isGrounded)
         {
@@ -181,6 +190,7 @@ public class PlayerMove : MonoBehaviour
             _yVelocity = 0f;
 
             JumpRemainCount = JumpMaxCount;
+
         }
         
         if (Input.GetKeyDown(KeyCode.Space) && (_characterController.isGrounded || (_isJumping && JumpRemainCount > 0)))
@@ -215,4 +225,5 @@ public class PlayerMove : MonoBehaviour
         _characterController.Move(dir * speed * Time.deltaTime);
         
     }
+    
 }
