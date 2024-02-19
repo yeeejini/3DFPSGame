@@ -30,7 +30,7 @@ public class PlayerMove : MonoBehaviour
 
 
 
-
+    // *** 점프 ***
     // 목표 : 스페이스바를 누르면 캐릭터를 점프하고 싶다.
     // 필요 속성 :
     // - 점프 파워 값
@@ -46,7 +46,7 @@ public class PlayerMove : MonoBehaviour
 
 
 
-
+    // *** 중력 ***
     // 목표 : 캐릭터에게 중력을 적용하고 싶다.
     // 필요 속성 :
     // - 중력 값
@@ -57,6 +57,22 @@ public class PlayerMove : MonoBehaviour
     // 1. 중력 가속도가 누적된다.
     // 2. 플레이어에게 y축에 있어 중력을 적용한다.
 
+
+
+
+    // 목표 : 벽에 닿아있는 상태에서 스페이스바를 누르면 벽타기를 하고 싶다.
+    // 필요 속성 :
+    // - 벽타기 파워
+    public float ClimbingPower = 7f;
+    // - 벽타기 스태미너 소모량 팩터
+    public float ClimbingStaminaCosumeFactor = 1.5f;
+    // - 벽타기 상태
+    private bool _isClimbing = false;
+    // 구현 순서
+    // 1. 만약 벽에 닿아 있는데
+    // 2. [Spacebar] 버튼을 누르고 있으면
+    // 3. 벽을 타겠다.
+    
 
     private void Awake()
     {
@@ -71,6 +87,25 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
+        // 구현 순서
+        // 1. 만약 벽에 닿아 있는데 && 스태미너가 > 0
+        if (Stamina > 0 && _characterController.collisionFlags == CollisionFlags.Sides)
+        {
+            // 2. [Spacebar] 버튼을 누르고 있으면
+            if (Input.GetKey(KeyCode.Space))
+            {
+                // 3. 벽을 타겠다.
+                _isClimbing = true;
+                _yVelocity = ClimbingPower;
+            }
+        }
+        
+
+        // 실습 과제 11. 벽타기에 스태미너 적용하기 (벽을 타면 스태미나가 달고, 다 달면 추락)
+        // - 벽타기 할 떄는 StaminaConsumeSpeed * 1.5배 소모
+
+
+
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
             CameraManager.Instance.SetCameraMode(CameraMode.FPS);
@@ -92,12 +127,27 @@ public class PlayerMove : MonoBehaviour
 
         // 실습 과제 1. Shift 누르고 있으면 빨리 뛰기 (이동 속도 10)
         float speed = MoveSpeed; // 5
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (_isClimbing || Input.GetKey(KeyCode.LeftShift))
         {
-            // 실습 과제 2. 스태미너 구현
-            // -Shfit 누른 동안에는 스태미나가 서서히 소모된다. (3초)
-            Stamina -= StaminaConsumeSpeed * Time.deltaTime;
-            if (Stamina > 0) 
+            /*if (_isClimbing)
+            {
+                Stamina -= StaminaConsumeSpeed * ClimbingStaminaCosumeFactor * Time.deltaTime;
+            }
+            else 
+            {
+                // 실습 과제 2. 스태미너 구현
+                // -Shfit 누른 동안에는 스태미나가 서서히 소모된다. (3초)
+                Stamina -= StaminaConsumeSpeed * Time.deltaTime;
+            }*/
+            // 위에 주석처리 된 코드 삼항연산자 적용하여 한줄로 만들기
+            // 조건식 ? 참 : 거짓
+            float factor = _isClimbing ? ClimbingStaminaCosumeFactor : 1f;
+            Stamina -= StaminaConsumeSpeed * factor * Time.deltaTime;
+
+
+
+            // 클라이밍 상태가 아닐때만 스피드 up
+            if (!_isClimbing && Stamina > 0) 
             {
                 speed = RunSpeed;  // 10
             }
@@ -123,9 +173,11 @@ public class PlayerMove : MonoBehaviour
             _yVelocity = JumpPower;
         }*/
 
+        // 땅에 닿았을때
         if (_characterController.isGrounded)
         {
             _isJumping = false;
+            _isClimbing = false;
             _yVelocity = 0f;
 
             JumpRemainCount = JumpMaxCount;

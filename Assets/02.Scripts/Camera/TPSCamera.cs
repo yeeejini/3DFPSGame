@@ -21,14 +21,6 @@ public class TPSCamera : MonoBehaviour
     private float _mx = 0;
     private float _my = 0;
 
-
-    
-
-    void Start()
-    {
-        
-    }
-
     
     void LateUpdate()
     {
@@ -57,8 +49,5 @@ public class TPSCamera : MonoBehaviour
             transform.RotateAround(Target.position, Vector3.up, _mx);
             transform.RotateAround(Target.position, transform.right, -_my);
         }
-        
-
     }
-    
 }
