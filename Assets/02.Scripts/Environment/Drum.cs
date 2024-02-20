@@ -8,7 +8,7 @@ public class Drum : MonoBehaviour, IHitable
 
     public GameObject DrumEffectPrefabs;
 
-    Rigidbody rigidbody;
+    Rigidbody _rigidbody;
     public float Power = 20f;
 
     public float ExplosionRadius = 3f;
@@ -16,24 +16,33 @@ public class Drum : MonoBehaviour, IHitable
 
     public float EXPLOSION_TIME = 3f;
 
+    private bool _isExplosion = false;
+
     private void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
     public void Hit(int damage)
     {
         _healthCount += 1;
         if (_healthCount >= 3) 
         {
-            StartCoroutine(ExplosionDrum());
+            ExplosionDrum();
         }
     }
-    public IEnumerator ExplosionDrum() 
+    public void ExplosionDrum() 
     {
-        rigidbody.AddForce(transform.up * Power, ForceMode.Impulse);
-        rigidbody.AddTorque(new Vector3(1, 0, 1) * Power / 2f);
+        if (_isExplosion) 
+        {
+            return;
+        }
+        _isExplosion = true;
 
-        yield return new WaitForSeconds(EXPLOSION_TIME);
+
+        _rigidbody.AddForce(transform.up * Power, ForceMode.Impulse);
+        _rigidbody.AddTorque(new Vector3(1, 0, 1) * Power / 2f);
+
+        StartCoroutine(Coroutine_Explosion());
 
         GameObject drumfx = Instantiate(DrumEffectPrefabs);
         drumfx.transform.position = this.transform.position;
@@ -50,6 +59,21 @@ public class Drum : MonoBehaviour, IHitable
             }
         }
 
+        int environmentLayer = LayerMask.GetMask("Environment");
+        Collider[] environmentColliders = Physics.OverlapSphere(transform.position, ExplosionRadius, environmentLayer);
+        foreach (Collider c in environmentColliders)
+        {
+            Drum drum = null;
+            if (c.TryGetComponent<Drum>(out drum)) 
+            {
+                drum.ExplosionDrum();
+            }
+        }
+
         Destroy(gameObject);
+    }
+    private IEnumerator Coroutine_Explosion() 
+    {
+        yield return new WaitForSeconds(EXPLOSION_TIME);
     }
 }
