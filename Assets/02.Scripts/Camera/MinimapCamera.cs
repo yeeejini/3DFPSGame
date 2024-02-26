@@ -21,6 +21,10 @@ public class MinimapCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (GameManager.Instance.State != GameState.Go)
+        {
+            return;
+        }
         // 대상의 현재 위치를 가져옴
         Vector3 targetPosition = Target.position;
 

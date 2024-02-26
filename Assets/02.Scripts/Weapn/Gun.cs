@@ -14,7 +14,7 @@ public class Gun : MonoBehaviour
 
     // - 대표 이미지
     public Sprite ProfileImage;
-
+    
     // - 공격력
     public int Damage = 1;
 

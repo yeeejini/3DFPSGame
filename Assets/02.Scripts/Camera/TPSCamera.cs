@@ -24,6 +24,10 @@ public class TPSCamera : MonoBehaviour
     
     void LateUpdate()
     {
+        if (GameManager.Instance.State != GameState.Go)
+        {
+            return;
+        }
         if (CameraManager.Instance.Mode == CameraMode.TPS) 
         {
             // 구현 순서 :

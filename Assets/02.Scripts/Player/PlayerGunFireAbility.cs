@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class PlayerGunFire : MonoBehaviour
+public class PlayerGunFireAbility : MonoBehaviour
 {
     public Gun CurrentGun; // 현재 들고있는 총
     private int _currentGunIndex; // 현재 들고있는 총의 순서
@@ -37,6 +37,20 @@ public class PlayerGunFire : MonoBehaviour
     // 총을 담는 인벤토리
     public List<Gun> GunInventory;
 
+    private const int DefaultFOV = 60;
+    private const int ZoomFOV = 20;
+    private bool isZoomMode = false; // 줌 모드냐?
+    private const float ZoomInDuration = 0.3f;
+    private const float ZoomOutDuration = 0.2f;
+    private float _zoomProgress;  // 0 ~ 1
+
+
+    //public Image ZoomModeImageUI;
+    public GameObject CrosshairUI;
+    public GameObject CrosshairZoomUI;
+
+
+    
     private void Start()
     {
         _currentGunIndex = 0;
@@ -44,24 +58,35 @@ public class PlayerGunFire : MonoBehaviour
         RefreshUI();
         RefreshGun();
     }
-    private void RefreshUI() 
-    {
-        GunImageUI.sprite = CurrentGun.ProfileImage;
-        BulletTextUI.text = $"{CurrentGun.BulletRemainCount:d2} / {CurrentGun.BulletMaxCount}";
-    }
-    private IEnumerator Reload_Coroutine() 
-    {
-        _isReloading = true;
-
-        // R키 누르면 1.5초 후 재장전, (중간에 총 쏘는 행위를 하면 재장전 취소)
-        yield return new WaitForSeconds(CurrentGun.ReloadTime);
-        CurrentGun.BulletRemainCount = CurrentGun.BulletMaxCount;
-        RefreshUI();
-
-        _isReloading = false;
-    }
+    
     void Update()
     {
+        if (GameManager.Instance.State != GameState.Go)
+        {
+            return;
+        }
+        // 마우스 휠 버튼(v로 변경했음) 눌렀을 때 && 현재 총이 스나이퍼
+        if (Input.GetKeyDown(KeyCode.V) && CurrentGun.GType == GunType.Sniper)
+        {
+            isZoomMode = !isZoomMode;  // 줌 모드 뒤집기 
+            _zoomProgress = 0f;
+            RefreshUI();
+        }
+
+        if (CurrentGun.GType == GunType.Sniper && _zoomProgress < 1) 
+        {
+            if (isZoomMode) 
+            {
+                _zoomProgress += Time.deltaTime / ZoomInDuration;
+                Camera.main.fieldOfView = Mathf.Lerp(DefaultFOV, ZoomFOV, _zoomProgress);
+            }
+            else
+            {
+                _zoomProgress += Time.deltaTime / ZoomOutDuration;
+                Camera.main.fieldOfView = Mathf.Lerp(ZoomFOV, DefaultFOV, _zoomProgress);
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.LeftBracket))
         {
             // 뒤로가기
@@ -71,6 +96,10 @@ public class PlayerGunFire : MonoBehaviour
                 _currentGunIndex = GunInventory.Count - 1;
             }
             CurrentGun = GunInventory[_currentGunIndex];
+
+            isZoomMode = false;
+            _zoomProgress = 1f;
+            RefreshZoomMode();
 
             RefreshGun();
             RefreshUI();
@@ -85,6 +114,10 @@ public class PlayerGunFire : MonoBehaviour
             }
             CurrentGun = GunInventory[_currentGunIndex];
 
+            isZoomMode = false;
+            _zoomProgress = 1f;
+            RefreshZoomMode();
+
             RefreshGun();
             RefreshUI();
         }
@@ -92,6 +125,11 @@ public class PlayerGunFire : MonoBehaviour
         {
             _currentGunIndex = 0;
             CurrentGun = GunInventory[0];
+
+            isZoomMode = false;
+            _zoomProgress = 1f;
+            RefreshZoomMode();
+
             RefreshGun();
             RefreshUI();
         }
@@ -99,6 +137,11 @@ public class PlayerGunFire : MonoBehaviour
         {
             _currentGunIndex = 1;
             CurrentGun = GunInventory[1];
+
+            isZoomMode = false;
+            _zoomProgress = 1f;
+            RefreshZoomMode();
+
             RefreshGun();
             RefreshUI();
         }
@@ -106,6 +149,11 @@ public class PlayerGunFire : MonoBehaviour
         {
             _currentGunIndex = 2;
             CurrentGun = GunInventory[2];
+
+            isZoomMode = false;
+            _zoomProgress = 1f;
+            RefreshZoomMode();
+
             RefreshGun();
             RefreshUI();
         }
@@ -167,6 +215,7 @@ public class PlayerGunFire : MonoBehaviour
                 HitEffect.gameObject.transform.forward = hitInfo.normal;
                 HitEffect.Play();
             }
+           
         }
     }
     private void RefreshGun() 
@@ -174,6 +223,37 @@ public class PlayerGunFire : MonoBehaviour
         foreach (Gun gun in GunInventory) 
         {
             gun.gameObject.SetActive(gun == CurrentGun);
+        }
+    }
+    public void RefreshUI()
+    {
+        GunImageUI.sprite = CurrentGun.ProfileImage;
+        BulletTextUI.text = $"{CurrentGun.BulletRemainCount:d2} / {CurrentGun.BulletMaxCount}";
+
+        CrosshairUI.SetActive(!isZoomMode);
+        CrosshairZoomUI.SetActive(isZoomMode);
+    }
+    private IEnumerator Reload_Coroutine()
+    {
+        _isReloading = true;
+
+        // R키 누르면 1.5초 후 재장전, (중간에 총 쏘는 행위를 하면 재장전 취소)
+        yield return new WaitForSeconds(CurrentGun.ReloadTime);
+        CurrentGun.BulletRemainCount = CurrentGun.BulletMaxCount;
+        RefreshUI();
+
+        _isReloading = false;
+    }
+    // 줌 모드에 따라 카메라 FOV 수정해주는 메서드
+    void RefreshZoomMode()
+    {
+        if (!isZoomMode) 
+        {
+            Camera.main.fieldOfView = DefaultFOV;
+        }
+        else
+        {
+            Camera.main.fieldOfView = ZoomFOV;
         }
     }
 }

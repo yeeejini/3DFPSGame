@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerMove : MonoBehaviour, IHitable
+public class PlayerMoveAbility : MonoBehaviour, IHitable
 {
     private CameraManager cameraManager;
     // 목표 : 키보드 방향키 또는 WASD 를 누르면 캐릭터를 바라보는 방향 기준으로 이동시키고 싶다.
@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour, IHitable
     // 3. 이동하기
 
     public float Stamina = 100;       // 스태미나
-    public const float MaxStamina = 100;
+    public float MaxStamina = 100;
     public float StaminaConsumeSpeed = 33f; // 초당 스태미나 소모량
     public float StaminaChargeSpeed = 50f;  // 초당 스태미나 충전량
 
@@ -25,9 +25,6 @@ public class PlayerMove : MonoBehaviour, IHitable
     public Slider StaminaSliderUI;
 
     private CharacterController _characterController;
-
-
-
 
 
     // *** 점프 ***
@@ -43,9 +40,6 @@ public class PlayerMove : MonoBehaviour, IHitable
     // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
 
 
-
-
-
     // *** 중력 ***
     // 목표 : 캐릭터에게 중력을 적용하고 싶다.
     // 필요 속성 :
@@ -56,8 +50,6 @@ public class PlayerMove : MonoBehaviour, IHitable
     // 구현 순서 :
     // 1. 중력 가속도가 누적된다.
     // 2. 플레이어에게 y축에 있어 중력을 적용한다.
-
-
 
 
     // 목표 : 벽에 닿아있는 상태에서 스페이스바를 누르면 벽타기를 하고 싶다.
@@ -92,9 +84,15 @@ public class PlayerMove : MonoBehaviour, IHitable
         cameraManager = GetComponent<CameraManager>();
 
         Health = MaxHealth;
+
+        
     }
     void Update()
     {
+        if (GameManager.Instance.State != GameState.Go)
+        {
+            return;
+        }
         // 구현 순서
         // 1. 만약 벽에 닿아 있는데 && 스태미너가 > 0
         if (Stamina > 0 && _characterController.collisionFlags == CollisionFlags.Sides)
@@ -107,7 +105,7 @@ public class PlayerMove : MonoBehaviour, IHitable
                 _yVelocity = ClimbingPower;
             }
         }
-        
+
 
         // 실습 과제 11. 벽타기에 스태미너 적용하기 (벽을 타면 스태미나가 달고, 다 달면 추락)
         // - 벽타기 할 떄는 StaminaConsumeSpeed * 1.5배 소모
@@ -129,7 +127,7 @@ public class PlayerMove : MonoBehaviour, IHitable
 
 
         // 2. '캐릭터가 바라보는 방향'을 기준으로 방향 구하기
-        Vector3 dir = new Vector3(x:h, y:0, z:v);             // 로컬 좌표계 (나만의 동서남북)
+        Vector3 dir = new Vector3(x: h, y: 0, z: v);             // 로컬 좌표계 (나만의 동서남북)
         dir.Normalize();
         dir = Camera.main.transform.TransformDirection(dir);  // 글로벌 좌표계 (세상의 동서남북)
 
@@ -155,19 +153,19 @@ public class PlayerMove : MonoBehaviour, IHitable
 
 
             // 클라이밍 상태가 아닐때만 스피드 up
-            if (!_isClimbing && Stamina > 0) 
+            if (!_isClimbing && Stamina > 0)
             {
                 speed = RunSpeed;  // 10
             }
         }
-        else 
+        else
         {
             // - 아니면 스태미나가 소모 되는 속도보다 빠른 속도로 충전된다. (2초)
             Stamina += StaminaChargeSpeed * Time.deltaTime;
         }
 
-        Stamina = Mathf.Clamp(value:Stamina, min:0, max:100);
-        Health = Mathf.Clamp(Health, min:0, max:100);
+        Stamina = Mathf.Clamp(value: Stamina, min: 0, max: 100);
+        Health = Mathf.Clamp(Health, min: 0, max: 100);
 
         StaminaSliderUI.value = Stamina / MaxStamina; // 0 ~ 1 사이 반환
         HealthSliderUI.value = (float)Health / (float)MaxHealth;
@@ -181,7 +179,7 @@ public class PlayerMove : MonoBehaviour, IHitable
             // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
             _yVelocity = JumpPower;
         }*/
-        
+
         // 땅에 닿았을때
         if (_characterController.isGrounded)
         {
@@ -192,7 +190,7 @@ public class PlayerMove : MonoBehaviour, IHitable
             JumpRemainCount = JumpMaxCount;
 
         }
-        
+
         if (Input.GetKeyDown(KeyCode.Space) && (_characterController.isGrounded || (_isJumping && JumpRemainCount > 0)))
         {
             _isJumping = true;
@@ -201,10 +199,6 @@ public class PlayerMove : MonoBehaviour, IHitable
             // 2. 플레이어에게 y축에 있어 점프 파워를 적용한다.
             _yVelocity = JumpPower;
         }
-
-
-
-
 
 
         // 3-1. 중력 적용
@@ -218,12 +212,10 @@ public class PlayerMove : MonoBehaviour, IHitable
         dir.y = _yVelocity;
 
 
-
-
         // 3-2. 이동하기                                  
         // transform.position += speed * dir * Time.deltaTime; -> 캐릭터 컨트롤러를 사용
         _characterController.Move(dir * speed * Time.deltaTime);
-        
+
     }
     public void Hit(int damage)
     {
@@ -231,6 +223,10 @@ public class PlayerMove : MonoBehaviour, IHitable
         if (Health < 0)
         {
             Destroy(gameObject);
+
+            GameManager.Instance.GameOver();
+
+            Debug.Log(GameManager.Instance.State);
         }
     }
 }
