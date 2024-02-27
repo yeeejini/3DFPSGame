@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,7 @@ public class PlayerBombFireAbility : MonoBehaviour
     private int presentbombcount;
 
     // UI에 표시할 텍스트
-    public Text BombCountTextUI;
+    public TextMeshProUGUI BombCountTextUI;
 
     // 수류탄을 담을 오브젝트 풀
     public List<GameObject> BombPool;

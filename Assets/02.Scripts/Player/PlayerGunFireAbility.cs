@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,7 @@ public class PlayerGunFireAbility : MonoBehaviour
     
 
     // - 총알 개수 텍스트 UI
-    public Text BulletTextUI;
+    public TextMeshProUGUI BulletTextUI;
 
     // 장전코루틴
     private bool _isReloading = false;       // 재장전 중이냐?
@@ -57,6 +58,7 @@ public class PlayerGunFireAbility : MonoBehaviour
 
         RefreshUI();
         RefreshGun();
+
     }
     
     void Update()
@@ -174,9 +176,13 @@ public class PlayerGunFireAbility : MonoBehaviour
         // 1. 만약에 마우스 왼쪽 버튼을 누르면(실습 과제 13. 마우스 왼쪽 버튼 누르고  있으면 연사 (쿨타임 적용))
         if (Input.GetMouseButton(0) && _timer >= CurrentGun.FireCooltime && CurrentGun.BulletRemainCount > 0) 
         {
-            // 재장전 취소
-            StopAllCoroutines();
-            _isReloading = false;
+            if(_isReloading) 
+            {
+                // 재장전 취소
+                StopAllCoroutines();
+                _isReloading = false;
+            }
+            
 
 
             CurrentGun.BulletRemainCount -= 1;

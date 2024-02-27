@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,8 +20,9 @@ public class GameManager : MonoBehaviour
     // 게임의 상태는 처음에 "준비" 상태
     public GameState State { get; private set; } = GameState.Ready;
 
-    public Text StateTextUI;
+    public TextMeshProUGUI StateTextUI;
     
+
     public Color GoStateColor;
 
     // 게임상태
@@ -45,13 +47,12 @@ public class GameManager : MonoBehaviour
         // 1. 게임 "준비" 상태                               Ready
         State = GameState.Ready;
         StateTextUI.gameObject.SetActive(true);
-        StateTextUI.color = new Color(255 / 255f, 131 / 255f, 64 / 255f);
         Refresh();
 
 
         // 2. 1.6초 후에 게임 "시작" 상태                    Start
         yield return new WaitForSeconds(1.6f);
-        Go();
+        State = GameState.Go;
         Refresh();
 
 
@@ -68,12 +69,7 @@ public class GameManager : MonoBehaviour
         StateTextUI.gameObject.SetActive(true);
         Refresh();
     }
-    public void Go()
-    {
-        State = GameState.Go;
-        StateTextUI.color = GoStateColor;
-        Refresh();
-    }
+  
 
     public void Refresh() 
     {
@@ -82,11 +78,13 @@ public class GameManager : MonoBehaviour
             case GameState.Ready: 
             {
                 StateTextUI.text = "Ready...";
+                StateTextUI.color = new Color(255 / 255f, 131 / 255f, 64 / 255f);
                 break;
             }
             case GameState.Go: 
             {
                 StateTextUI.text = "Go!";
+                StateTextUI.color = GoStateColor;
                 break;
             }
             case GameState.Over: 

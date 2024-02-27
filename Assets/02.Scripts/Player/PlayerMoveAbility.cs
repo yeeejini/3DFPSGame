@@ -71,10 +71,13 @@ public class PlayerMoveAbility : MonoBehaviour, IHitable
     public int Health;
     public int MaxHealth = 100;
 
+    private Animator _animator;
+
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+        _animator = GetComponentInChildren<Animator>();  // 플레이어 안에 있는 자식 가져옴
     }
 
 
@@ -128,6 +131,7 @@ public class PlayerMoveAbility : MonoBehaviour, IHitable
 
         // 2. '캐릭터가 바라보는 방향'을 기준으로 방향 구하기
         Vector3 dir = new Vector3(x: h, y: 0, z: v);             // 로컬 좌표계 (나만의 동서남북)
+        //Vector3 unNormalize
         dir.Normalize();
         dir = Camera.main.transform.TransformDirection(dir);  // 글로벌 좌표계 (세상의 동서남북)
 
@@ -215,7 +219,7 @@ public class PlayerMoveAbility : MonoBehaviour, IHitable
         // 3-2. 이동하기                                  
         // transform.position += speed * dir * Time.deltaTime; -> 캐릭터 컨트롤러를 사용
         _characterController.Move(dir * speed * Time.deltaTime);
-
+        _animator.SetFloat("Move", dir.magnitude);
     }
     public void Hit(int damage)
     {

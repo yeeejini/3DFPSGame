@@ -1,6 +1,7 @@
  using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using static UnityEngine.GraphicsBuffer;
 
 public enum ItemState
@@ -10,6 +11,7 @@ public enum ItemState
 }
 public class ItemObject : MonoBehaviour
 {
+
     public ItemType ItemType;
 
     private ItemState _itemState = ItemState.Idle;
@@ -76,7 +78,6 @@ public class ItemObject : MonoBehaviour
         }
         // 1. 아이템 매니저(인벤토리)에 추가하고,
         ItemManager.Instance.AddItem(ItemType);
-        ItemManager.Instance.RefreshUI();
 
         // 2. 사라진다.
         gameObject.SetActive(false);
