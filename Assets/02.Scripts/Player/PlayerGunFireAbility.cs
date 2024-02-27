@@ -50,8 +50,8 @@ public class PlayerGunFireAbility : MonoBehaviour
     public GameObject CrosshairUI;
     public GameObject CrosshairZoomUI;
 
+    private Animator _animator;
 
-    
     private void Start()
     {
         _currentGunIndex = 0;
@@ -59,6 +59,7 @@ public class PlayerGunFireAbility : MonoBehaviour
         RefreshUI();
         RefreshGun();
 
+        _animator = GetComponentInChildren<Animator>();
     }
     
     void Update()
@@ -182,7 +183,8 @@ public class PlayerGunFireAbility : MonoBehaviour
                 StopAllCoroutines();
                 _isReloading = false;
             }
-            
+
+            _animator.SetTrigger("Shoot");
 
 
             CurrentGun.BulletRemainCount -= 1;

@@ -36,9 +36,7 @@ public class ItemManager : MonoBehaviour
         ItemList.Add(new Item(ItemType.Health, 3));  // 0 : Health
         ItemList.Add(new Item(ItemType.Stamina, 5)); // 1 : Stamina
         ItemList.Add(new Item(ItemType.Bullet, 7));  // 2 : Bullet
-
     }
-
 
     // 1. 아이템 추가(생성)
     public void AddItem(ItemType itemType) 
@@ -77,7 +75,7 @@ public class ItemManager : MonoBehaviour
             if (ItemList[i].ItemType == itemType)
             {
                 bool result = ItemList[i].TryUse();
-                if (OnDataChanged != null) 
+                if (OnDataChanged != null)  
                 {
                     OnDataChanged.Invoke();
                 }

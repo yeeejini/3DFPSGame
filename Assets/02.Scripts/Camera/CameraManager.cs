@@ -43,7 +43,7 @@ public class CameraManager : MonoBehaviour
         tpsCamera = GetComponent<TPSCamera>();
 
         // 초기 카메라 모드를 FPS로 설정
-        SetCameraMode(CameraMode.FPS);
+        SetCameraMode(CameraMode.TPS);
     }
 
     // 외부에서 호출하여 카메라 모드를 설정하는 메서드

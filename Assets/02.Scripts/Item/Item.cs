@@ -16,6 +16,8 @@ public class Item
     public ItemType ItemType;
     public int Count;
 
+
+    
     public Item(ItemType itemType, int count) 
     {
         ItemType = itemType;
@@ -37,6 +39,7 @@ public class Item
                 // Todo : 플레이어 체력 꽉차기
                 PlayerMoveAbility playerMoveAbility = GameObject.FindWithTag("Player").GetComponent<PlayerMoveAbility>();
                 playerMoveAbility.Health = playerMoveAbility.MaxHealth;
+                playerMoveAbility.RefreshAnimation();
                 break;
             }
             case ItemType.Stamina: 

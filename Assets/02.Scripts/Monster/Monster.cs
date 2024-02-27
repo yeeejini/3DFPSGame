@@ -144,16 +144,23 @@ public class Monster : MonoBehaviour, IHitable
     }
     private void Patrol() 
     {
+        // 몬스터의 네비게이션 에이전트의 멈춤 거리를 0으로 설정
         _navMeshAgent.stoppingDistance = 0f;
+        // 몬스터의 네비게이션 에이전트에 목적지를 설정하여 순찰을 시작
         _navMeshAgent.SetDestination(PatrolTarget.position);
 
+
+        // 네비게이션 에이전트의 경로가 완료되었고, 남은 거리가 TOLERANCE 이하일 때
         if (!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance <= TOLERANCE) 
         {
             Debug.Log("상태 전환: Patrol -> Comeback");
+            // 애니메이터에 "PatrolToComeback" 트리거를 설정하여 애니메이션 전환을 시작
             _animator.SetTrigger("PatrolToComeback");
+            // 몬스터의 상태를 Comeback으로 변경
             _currentState = MonsterState.Comeback;
         }
 
+        // 몬스터와 타겟 간의 거리가 FindDistance(감지 거리) 이하일 때
         if (Vector3.Distance(_target.position, transform.position) <= FindDistance) 
         {
             Debug.Log("상태 전환: Patrol -> Trace");

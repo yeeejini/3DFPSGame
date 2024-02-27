@@ -224,13 +224,21 @@ public class PlayerMoveAbility : MonoBehaviour, IHitable
     public void Hit(int damage)
     {
         Health -= damage;
-        if (Health < 0)
+
+        RefreshAnimation();
+        if (Health <= 0)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
 
             GameManager.Instance.GameOver();
 
             Debug.Log(GameManager.Instance.State);
         }
     }
+
+    public void RefreshAnimation() 
+    {
+        _animator.SetLayerWeight(1, 1 - Health / (float)MaxHealth);
+    }
+
 }

@@ -26,6 +26,8 @@ public class PlayerBombFireAbility : MonoBehaviour
     public List<GameObject> BombPool;
     public int BombPoolSize = 5;
 
+    private Animator _animator;
+
     private void Start()
     {
         // 오브젝트 풀 초기화
@@ -44,6 +46,8 @@ public class PlayerBombFireAbility : MonoBehaviour
         // 시작 시 최대 수류탄 개수로 초기화하고 UI 갱신
         presentbombcount = MaxBombCount;
         RefreshUI();
+
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -67,6 +71,7 @@ public class PlayerBombFireAbility : MonoBehaviour
                 // 수류탄 오브젝트가 비활성화 상태인지 확인
                 if (BombPool[i].activeInHierarchy == false) 
                 {
+                    _animator.SetTrigger("Throw");
                     // 비활성화된 수류탄 오브젝트를 찾았으므로 해당 오브젝트를 활성화하고 루프 탈출
                     bomb = BombPool[i];
                     bomb.SetActive(true);

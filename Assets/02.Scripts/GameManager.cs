@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
     }
+
+
     private void Start()
     {
         StartCoroutine(Start_Coroutine());
